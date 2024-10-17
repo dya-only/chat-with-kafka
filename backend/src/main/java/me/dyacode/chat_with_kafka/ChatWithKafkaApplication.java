@@ -9,5 +9,4 @@ public class ChatWithKafkaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ChatWithKafkaApplication.class, args);
 	}
-
 }
