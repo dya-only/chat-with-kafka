@@ -1,9 +1,13 @@
 package me.dyacode.chat_with_kafka.domain.user.service;
 
+import lombok.RequiredArgsConstructor;
 import me.dyacode.chat_with_kafka.domain.user.dto.UserDto;
 import me.dyacode.chat_with_kafka.domain.user.entity.User;
 import me.dyacode.chat_with_kafka.domain.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import me.dyacode.chat_with_kafka.global.util.Image;
+import me.dyacode.chat_with_kafka.global.util.ImageUploader;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +15,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
+    private ImageUploader imageUploader;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -30,19 +33,25 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User createUser(UserDto.Request userDto) {
-        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-        User user = new User(userDto, null);
-        user.setPassword(encodedPassword);
-        return userRepository.save(user);
+    public void create(UserDto.Request userDto) throws Exception {
+        String plainPassword = userDto.getPassword();
+        String encryptedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
+        Image image = imageUploader.upload(userDto.getImage(), "user");
+
+        userDto.setPassword(encryptedPassword);
+        User user = new User(userDto, image.getStorePath());
+        userRepository.save(user);
     }
 
-    public User updateUser(Long id, UserDto.Request userDetails) {
-        return userRepository.findById(id).map(user -> {
-            user.update(userDetails, null);
-            user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
-            return userRepository.save(user);
-        }).orElseThrow(() -> new RuntimeException("User not found"));
+    public void update(Long id, UserDto.Request userDto) throws Exception {
+        User user = userRepository.findById(id).orElseThrow(NotFoundException::new);
+        String plainPassword = userDto.getPassword();
+        String encryptedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
+        Image image = imageUploader.upload(userDto.getImage(), "user");
+
+        userDto.setPassword(encryptedPassword);
+        user.update(userDto, image.getStorePath());
+        userRepository.save(user);
     }
 
     public void deleteUser(Long id) {

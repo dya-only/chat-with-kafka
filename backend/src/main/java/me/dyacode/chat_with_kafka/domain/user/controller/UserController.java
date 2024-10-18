@@ -1,9 +1,11 @@
 package me.dyacode.chat_with_kafka.domain.user.controller;
 
+import lombok.RequiredArgsConstructor;
 import me.dyacode.chat_with_kafka.domain.user.dto.UserDto;
-import me.dyacode.chat_with_kafka.domain.user.entity.User;
 import me.dyacode.chat_with_kafka.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,8 +13,8 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
     private UserService userService;
 
     @GetMapping
@@ -29,22 +31,22 @@ public class UserController {
 
     @PostMapping
     @ResponseBody
-    public UserDto.Response createUser(@RequestBody UserDto.Request userDto) {
-        User user = userService.createUser(userDto);
-        return new UserDto.Response(user);
+    public ResponseEntity<HttpStatus> createUser(@RequestBody UserDto.Request userDto) throws Exception {
+        userService.create(userDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ResponseBody
-    public UserDto.Response updateUser(@PathVariable Long id, @RequestBody UserDto.Request userDto) {
-        User user = userService.updateUser(id, userDto);
-        return new UserDto.Response(user);
+    public ResponseEntity<HttpStatus> updateUser(@PathVariable Long id, @ModelAttribute UserDto.Request userDto) throws Exception {
+        userService.update(id, userDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String deleteUser(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return "User deleted successfully";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
