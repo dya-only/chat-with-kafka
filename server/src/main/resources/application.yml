@@ -1,0 +1,74 @@
+# Amazon MSK (SASL/SCRAM)
+#spring:
+#  mvc:
+#    view:
+#      prefix: /WEB-INF/views/
+#      suffix: .jsp
+#  application:
+#    name: chat-with-kafka
+#  kafka:
+#    bootstrap-servers: >
+#      b-1.kafkacluster.21dju0.c2.kafka.ap-northeast-2.amazonaws.com:9096,
+#      b-2.kafkacluster.21dju0.c2.kafka.ap-northeast-2.amazonaws.com:9096
+#    properties:
+#      security.protocol: SASL_SSL
+#      sasl.mechanism: SCRAM-SHA-512
+#      sasl.jaas.config: |
+#        org.apache.kafka.common.security.scram.ScramLoginModule required
+#        username="dya-only"
+#        password="password";
+#    consumer:
+#      group-id: group-id
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#
+#aws:
+#  secretsmanager:
+#    secretName: AmazonMSK_kafka-key
+
+# ---
+
+# Docker Compose Kafka KRaft
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db:3306/chat?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true # To beautify or pretty print the SQL
+        show_sql: true    # Show SQL queries in logs
+
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+  application:
+    name: chat-with-kafka
+
+  kafka:
+    bootstrap-servers: >
+        kafka1:9092,
+        kafka2:9092
+    consumer:
+      group-id: group-id
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+#logging:
+#  level:
+#    org.springframework.kafka: DEBUG
+#    org.apache.kafka: DEBUG

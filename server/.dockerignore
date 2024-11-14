@@ -1,0 +1,15 @@
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+.git
+.gitignore
+
+*.iml
+.idea/
+.vscode/
+
+Dockerfile
+docker-compose.yml
+
+*.log
