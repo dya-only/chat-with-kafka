@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.dyacode.chat_with_kafka.domain.kafka.dto.MessageDto;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import me.dyacode.chat_with_kafka.domain.kafka.service.MessageService;
 import org.springframework.stereotype.Service;
 
 @Service
