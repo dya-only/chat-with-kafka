@@ -24,7 +24,6 @@ public class KafkaController {
 //    @SendTo("/topic/public")
     public MessageDto.Response sendMessage(MessageDto.Request message) {
 
-        producerService.sendMessage(message);
-        return messageService.saveMessage(message);
+        return producerService.sendMessage(message);
     }
 }

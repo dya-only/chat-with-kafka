@@ -16,6 +16,7 @@ public class KafkaConsumerService {
     public void listen(MessageDto.Request message) {
 
         System.out.println("Received Message: " + message.getContent());
+        messageService.saveMessage(message);
         messagingTemplate.convertAndSend("/topic/public", message);
     }
 }
